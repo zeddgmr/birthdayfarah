@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Happy Birthday 🎂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 25%, #a18cd1 60%, #fbc2eb 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 10s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .bg-decor {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .floaty {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0.5;
+    animation: floatUp linear infinite;
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.5; }
+    90% { opacity: 0.5; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .card {
+    position: relative;
+    width: min(380px, 100%);
+    min-height: 360px;
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(120, 40, 100, 0.25);
+    padding: 36px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .card.pop {
+    animation: cardPop 0.35s ease;
+  }
+
+  @keyframes cardPop {
+    0% { transform: scale(0.85) rotate(-2deg); opacity: 0; }
+    60% { transform: scale(1.03) rotate(1deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .emoji-top {
+    font-size: 3rem;
+    margin-bottom: 10px;
+  }
+
+  .card-text {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #4a2545;
+    line-height: 1.5;
+    margin: 0 0 28px 0;
+    min-height: 70px;
+  }
+
+  .hint {
+    font-size: 0.8rem;
+    color: #6b3f63;
+    opacity: 0.8;
+    margin-top: -12px;
+    margin-bottom: 18px;
+  }
+
+  .buttons {
+    position: relative;
+    width: 100%;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .btn {
+    border: none;
+    border-radius: 999px;
+    padding: 14px 30px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transition: transform 0.15s ease;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .btn:active { transform: scale(0.95); }
+
+  .btn.yes {
+    background: linear-gradient(135deg, #ff6fa5, #ff9a8b);
+    color: white;
+  }
+
+  .btn.no {
+    background: linear-gradient(135deg, #5fd0c0, #4ab8e8);
+    color: white;
+  }
+
+  /* once clicked the first time, the Yes button escapes the card
+     and roams freely anywhere on the actual screen */
+  .btn.yes.roaming {
+    position: fixed;
+    z-index: 50;
+  }
+
+  .btn.yes.spawn-pop {
+    animation: spawnPop 0.3s ease;
+  }
+
+  @keyframes spawnPop {
+    0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+    60% { transform: scale(1.15) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  #confettiLayer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 5;
+  }
+
+  .confetti-piece {
+    position: absolute;
+    top: -20px;
+    width: 10px;
+    height: 14px;
+    opacity: 0.9;
+    animation: fall linear forwards;
+  }
+
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(600deg); opacity: 0.3; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-decor" id="bgDecor"></div>
+<div id="confettiLayer"></div>
+
+<div class="wrap">
+  <div class="card pop" id="card">
+    <div class="emoji-top" id="emojiTop">🎂</div>
+    <p class="card-text" id="cardText">Happy Birthday!<br>Do you love me?</p>
+    <p class="hint" id="hint">good luck catching that "Yes" 😏</p>
+    <div class="buttons" id="buttons">
+      <button class="btn yes" id="yesBtn">Yes</button>
+      <button class="btn no" id="noBtn">No</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------- background floating decor ----------
+  const bgDecor = document.getElementById('bgDecor');
+  const emojis = ['🎈','🎉','✨','🎂','💖'];
+  for (let i = 0; i < 14; i++) {
+    const span = document.createElement('span');
+    span.className = 'floaty';
+    span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    span.style.left = Math.random() * 100 + 'vw';
+    span.style.animationDuration = (8 + Math.random() * 10) + 's';
+    span.style.animationDelay = (Math.random() * 8) + 's';
+    span.style.fontSize = (1.4 + Math.random() * 1.6) + 'rem';
+    bgDecor.appendChild(span);
+  }
+
+  // ---------- elements ----------
+  const card = document.getElementById('card');
+  const cardText = document.getElementById('cardText');
+  const emojiTop = document.getElementById('emojiTop');
+  const hint = document.getElementById('hint');
+  const buttons = document.getElementById('buttons');
+  const yesBtn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+
+  let state = 'initial';
+
+  const states = {
+    initial: {
+      emoji: '🎂',
+      text: 'Happy Birthday!<br>Do you love me?',
+      showHint: true,
+      onNo: () => goTo('hate')
+      // onYes intentionally has no real action here — it just teleports forever
+    },
+    hate: {
+      emoji: '😤',
+      text: 'I knew you hated me, loser.<br>Do you hate me?',
+      showHint: false,
+      onYes: () => goTo('love2'),
+      onNo: () => goTo('end')
+    },
+    love2: {
+      emoji: '🥺',
+      text: 'Okay okay...<br>Do you love me?',
+      showHint: false,
+      onYes: () => goTo('end'),
+      onNo: () => goTo('hate')
+    },
+    end: {
+      emoji: '🥳',
+      text: 'I love you too!<br>Happy Birthday, bestie! 🎉',
+      showHint: false,
+      isEnd: true
+    }
+  };
+
+  function resetYesButton() {
+    yesBtn.classList.remove('roaming', 'spawn-pop');
+    yesBtn.style.left = '';
+    yesBtn.style.top = '';
+  }
+
+  function render() {
+    const s = states[state];
+    card.classList.remove('pop');
+    void card.offsetWidth; // restart animation
+    card.classList.add('pop');
+
+    emojiTop.textContent = s.emoji;
+    cardText.innerHTML = s.text;
+    hint.style.display = s.showHint ? 'block' : 'none';
+
+    resetYesButton();
+
+    if (s.isEnd) {
+      buttons.style.display = 'none';
+      launchConfetti();
+    } else {
+      buttons.style.display = 'flex';
+    }
+  }
+
+  function goTo(next) {
+    state = next;
+    render();
+  }
+
+  // ---------- the escaping Yes button (initial card only) ----------
+  function teleportYesButton() {
+    yesBtn.classList.remove('spawn-pop');
+    yesBtn.classList.add('roaming');
+
+    const w = yesBtn.offsetWidth || 100;
+    const h = yesBtn.offsetHeight || 50;
+    const margin = 16;
+    const maxX = Math.max(window.innerWidth - w - margin, margin);
+    const maxY = Math.max(window.innerHeight - h - margin, margin);
+
+    const x = margin + Math.random() * (maxX - margin);
+    const y = margin + Math.random() * (maxY - margin);
+
+    yesBtn.style.left = x + 'px';
+    yesBtn.style.top = y + 'px';
+
+    // retrigger the spawn-pop animation
+    void yesBtn.offsetWidth;
+    yesBtn.classList.add('spawn-pop');
+  }
+
+  yesBtn.addEventListener('click', () => {
+    if (state === 'initial') {
+      teleportYesButton();
+      return;
+    }
+    if (states[state].onYes) states[state].onYes();
+  });
+
+  noBtn.addEventListener('click', () => {
+    if (states[state].onNo) states[state].onNo();
+  });
+
+  // ---------- confetti ----------
+  function launchConfetti() {
+    const layer = document.getElementById('confettiLayer');
+    const colors = ['#ff6fa5', '#ffd86f', '#5fd0c0', '#4ab8e8', '#c389f2'];
+    for (let i = 0; i < 90; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+      piece.style.animationDelay = (Math.random() * 1.2) + 's';
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      layer.appendChild(piece);
+      setTimeout(() => piece.remove(), 6000);
+    }
+  }
+
+  render();
+</script>
+</body>
+</html>
